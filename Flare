@@ -1,0 +1,21 @@
+本文的主要场景是在现有的商用智能手机上实现360°视频的码率自适应。
+
+其vp中使用的算法是LR和RR相结合，为了更好的适应快速的头部运动预测，文中使用的是准确率相对较差但是轻量级的算法。
+Flare uses LR for pw < 1 and RR for pw ≥ 1 due to their lightweight nature and reasonable accuracy
+
+文中预测tile时，以100ms作为间隔，窗口大小为30*100ms；同时，m=30次预测结果中的所有tile都会被取进来。
+
+同时提出了三种容忍VP不准确的机制：
+1.The frst one is naturally provided by the tiles themselves: since a tile must be fetched as long as any 
+of its frames intersects with any predicted viewport.
+2.The second mechanism dealing with inaccurate VP is to fetch additional tiles that are not in the originally predicted tile set.
+3.The third mechanism tackling the imperfect VP is to let an earlier inaccurate prediction be fxed by a more recent prediction 
+that is more accurate.
+
+对每个tile进行排名：
+与viewport重叠的tile为class0，并按照重叠面积大小排序。然后扩大viewport，此时包含进来的为class1，以此类推；
+剩余的属于最低类别，按照其质心与viewpoint的中心的球面距离进行排序。
+整个过程是离线的，缓存在数据库中供运行时使用的。
+
+
+
